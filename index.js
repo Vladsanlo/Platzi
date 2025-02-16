@@ -6,7 +6,9 @@ const routerApi =require('./routes/index');
 //Iniciamos aplicacion ejecutando nuestro "import"
 const app = express();
 //Y declaramos el puerto
-const port = 3000;
+const port = 3001;
+
+app.use(express.json());
 
 routerApi(app);
 
