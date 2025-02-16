@@ -1,22 +1,13 @@
 //importamos express
 const express = require('express');
-//importamos faker
-const { faker } = require('@faker-js/faker');
+
+const ProductsService = require('./../services/product.service')
 
 const router = express.Router();
+const service = new ProductsService();
 
 router.get('/', (req, res) => {
-  const products = [];
-  const { size } = req.query;
-  const limit = size || 10;
-  for (let index = 0; index < limit; index++) {
-    products.push({
-      name: faker.commerce.productName(),
-      price: parseInt(faker.commerce.price(), 10),
-      image: faker.image.url(),
-
-    });
-  }
+  const products = service.find();
   res.json(products);
 });
 //todo lo que sea especifico ,debe ir antes de lo que es dinamico
@@ -25,13 +16,35 @@ router.get('/filter', (req, res) => {
 });
 
 //cuando solo es un solo parametro ,solo se usa id/ 1.1
+
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  res.json({
-    id,
-    name: 'Product 2',
-    price: 2000
-  });
+  const product = service.findOne(id);
+  res.json(product);
 });
+
+router.post('/', (req, res) => {
+  const body = req.body;
+  const newProduct = service.create(body);
+  res.status(201).json(newProduct)
+})
+//tanto put y patch son iguales,pero se supone que patch es el que recibe los objetos de forma parcial
+router.patch('/:id', (req, res) => {
+  const { id } = req.params;
+  const body = req.body;
+  const product=service.update(id,body);
+  res.json(product);
+});
+
+// patch y post utilizan la misma "estructura" para ser usados,lo unico que cambia es que para patch se requiere un id
+
+
+
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+  const rta =service.delete(id);
+  res.json(rta)
+})
+
 
 module.exports = router;
